@@ -41,11 +41,11 @@ For more useful versions of those last four commands using Python Fire, see
 
 import difflib
 
-import fire
+import afire
 
 
 def main():
-    fire.Fire(difflib, name="difffull")
+    afire.Fire(difflib, name="difffull")
 
 
 if __name__ == "__main__":

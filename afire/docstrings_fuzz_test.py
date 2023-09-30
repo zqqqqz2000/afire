@@ -12,23 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the widget module."""
+"""Fuzz tests for the docstring parser module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from afire import docstrings
 from afire import testutils
 
-from examples.widget import widget
+from hypothesis import example
+from hypothesis import given
+from hypothesis import settings
+from hypothesis import strategies as st
 
 
-class WidgetTest(testutils.BaseTestCase):
-    def testWidgetWhack(self):
-        toy = widget.Widget()
-        self.assertEqual(toy.whack(), "whack!")
-        self.assertEqual(toy.whack(3), "whack! whack! whack!")
-
-    def testWidgetBang(self):
-        toy = widget.Widget()
-        self.assertEqual(toy.bang(), "bang bang!")
-        self.assertEqual(toy.bang("boom"), "boom bang!")
+class DocstringsFuzzTest(testutils.BaseTestCase):
+    @settings(max_examples=1000, deadline=1000)
+    @given(st.text(min_size=1))
+    @example("This is a one-line docstring.")
+    def test_fuzz_parse(self, value):
+        docstrings.parse(value)
 
 
 if __name__ == "__main__":

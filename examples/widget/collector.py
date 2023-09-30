@@ -14,7 +14,7 @@
 
 """As a Python Fire demo, a Collector collects widgets, and nobody knows why."""
 
-import fire
+import afire
 
 from examples.widget import widget
 
@@ -32,7 +32,7 @@ class Collector(object):
 
 
 def main():
-    fire.Fire(Collector(), name="collector")
+    afire.Fire(Collector(), name="collector")
 
 
 if __name__ == "__main__":

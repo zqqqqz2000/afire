@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A simple command line tool for testing purposes."""
+"""Python Fire test components Fire CLI.
+
+This file is useful for replicating test results manually.
+"""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import afire
+from afire import test_components
 
 
-def identity(arg=None):
-    return arg, type(arg)
-
-
-def main(_=None):
-    afire.Fire(identity, name="identity")
+def main():
+    afire.Fire(test_components)
 
 
 if __name__ == "__main__":

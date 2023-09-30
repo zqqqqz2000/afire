@@ -26,7 +26,7 @@ cipher caesar-encode 1 'Hello world!'  # Ifmmp xpsme!
 cipher caesar-decode 1 'Ifmmp xpsme!'  # Hello world!
 """
 
-import fire
+import afire
 
 
 def caesar_encode(n=0, text=""):
@@ -50,7 +50,7 @@ def _caesar_shift_char(n=0, char=" "):
 
 
 def main():
-    fire.Fire(name="cipher")
+    afire.Fire(name="cipher")
 
 
 if __name__ == "__main__":

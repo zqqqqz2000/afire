@@ -12,18 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A simple command line tool for testing purposes."""
+"""Tests importing the fire module."""
+
+import sys
 
 import afire
+from afire import testutils
+import mock
 
 
-def identity(arg=None):
-    return arg, type(arg)
+class FireImportTest(testutils.BaseTestCase):
+    """Tests importing Fire."""
 
+    def testFire(self):
+        with mock.patch.object(sys, "argv", ["commandname"]):
+            afire.Fire()
 
-def main(_=None):
-    afire.Fire(identity, name="identity")
+    def testFireMethods(self):
+        self.assertIsNotNone(afire.Fire)
+
+    def testNoPrivateMethods(self):
+        self.assertTrue(hasattr(afire, "Fire"))
+        self.assertFalse(hasattr(afire, "_Fire"))
 
 
 if __name__ == "__main__":
-    main()
+    testutils.main()

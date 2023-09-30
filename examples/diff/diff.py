@@ -58,7 +58,7 @@ import difflib
 import os
 import time
 
-import fire
+import afire
 
 
 class DiffLibWrapper(object):
@@ -99,7 +99,7 @@ class DiffLibWrapper(object):
 
 
 def main():
-    fire.Fire(DiffLibWrapper, name="diff")
+    afire.Fire(DiffLibWrapper, name="diff")
 
 
 if __name__ == "__main__":

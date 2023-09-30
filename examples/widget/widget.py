@@ -14,7 +14,7 @@
 
 """As a simple example of Python Fire, a Widget serves no clear purpose."""
 
-import fire
+import afire
 
 
 class Widget(object):
@@ -28,7 +28,7 @@ class Widget(object):
 
 
 def main():
-    fire.Fire(Widget(), name="widget")
+    afire.Fire(Widget(), name="widget")
 
 
 if __name__ == "__main__":

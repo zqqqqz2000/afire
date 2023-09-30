@@ -16,7 +16,7 @@
 
 import tempfile
 
-from fire import testutils
+from afire import testutils
 
 from examples.diff import diff
 from examples.diff import difffull

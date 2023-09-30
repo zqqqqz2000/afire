@@ -12,18 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A simple command line tool for testing purposes."""
+"""The Python Fire module."""
 
-import afire
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
+from afire.core import Fire
 
-def identity(arg=None):
-    return arg, type(arg)
-
-
-def main(_=None):
-    afire.Fire(identity, name="identity")
-
-
-if __name__ == "__main__":
-    main()
+__all__ = ["Fire"]
+__version__ = "0.5.0"
