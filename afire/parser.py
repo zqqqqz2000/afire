@@ -20,6 +20,9 @@ from __future__ import print_function
 
 import argparse
 import ast
+from datetime import datetime, date
+from typing import Union, Optional, Type, List, Tuple, Callable, Any, Dict, Set, TypeVar
+from functools import partial
 
 
 def CreateParser():
@@ -52,6 +55,94 @@ def SeparateFlagArgs(args):
         args = args[:separator_index]
         return args, flag_args
     return args, []
+
+
+def ParseTime(value: str) -> datetime:
+    for format in [
+        "%Y-%m-%d-%H:%M:%S",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y/%m/%d %H:%M:%S",
+        "%Y%m%d%H%M%S",
+        "%Y/%m/%d",
+        "%Y-%m-%d",
+    ]:
+        try:
+            return datetime.strptime(value, format)
+        except ValueError:
+            pass
+    raise ValueError(f"cannot parse {value} as date/datetime")
+
+
+def _DeGenericAlias(t) -> Tuple[Type, List[Type]]:
+    if IsGenericAlias(t):
+        return t.__origin__, t.__args__
+    return t, []
+
+
+def IsGenericAlias(t) -> bool:
+    return "__origin__" in dir(t)
+
+
+def ParserComplexValue(value: str, t):
+    origin, args = _DeGenericAlias(t)
+    if origin in (Union, Optional):
+        if value.lower() == "None" and origin == Optional:
+            return None
+
+        for each_type in args:
+            try:
+                if IsGenericAlias(each_type):
+                    return ParserComplexValue(value, each_type)
+
+                return SpecTypeParseValueGen(each_type)(value)
+            except ValueError:
+                ...
+
+    if issubclass(origin, (Dict, Set, Tuple, bytes)):
+        return _ParseConvert(DefaultParseValue(value), t)
+
+    raise ValueError(f'cannot parse value "{value}" to type {t}')
+
+
+def _ParseConvert(parsed: Any, t):
+    origin, args = _DeGenericAlias(t)
+    if issubclass(origin, Dict):
+        res = {}
+        key_t, value_t = args
+        for k, v in parsed.items():
+            if key_t == TypeVar:
+                res_key = k
+            elif IsGenericAlias(key_t):
+                res_key = _ParseConvert(k, key_t)
+            else:
+                res_key = TypeToParser.get(key_t, key_t)(k)
+
+            if value_t == TypeVar:
+                res_value = v
+            elif IsGenericAlias(value_t):
+                res_value = _ParseConvert(v, value_t)
+            else:
+                res_value = TypeToParser.get(value_t, value_t)(v)
+
+            res[res_key] = res_value
+        return res
+
+
+TypeToParser = {
+    datetime: ParseTime,
+    date: lambda value: ParseTime(value).date,
+    bool: lambda value: value.lower() == "true" or value == True,
+}
+
+
+def SpecTypeParseValueGen(t) -> Callable[[str], Any]:
+    # complex type, e.g. Union
+    if IsGenericAlias(t):
+        parse_fn = partial(ParserComplexValue, t=t)
+    # try to use type to parser mapping or callable
+    else:
+        parse_fn = TypeToParser.get(t, t)
+    return parse_fn
 
 
 def DefaultParseValue(value):

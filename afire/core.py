@@ -73,7 +73,7 @@ from afire import trace
 from afire import value_types
 from afire.console import console_io
 import six
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict, Type
 
 if six.PY34:
     import asyncio  # pylint: disable=import-error,g-import-not-at-top  # pytype: disable=import-error
@@ -711,7 +711,12 @@ def _MakeParseFn(fn, metadata):
 
         # Note: _ParseArgs modifies kwargs.
         parsed_args, kwargs, remaining_args, capacity = _ParseArgs(
-            fn_spec.args, fn_spec.defaults, num_required_args, kwargs, remaining_args, metadata
+            {arg: fn_spec.annotations.get(arg, ...) for arg in fn_spec.args},
+            fn_spec.defaults,
+            num_required_args,
+            kwargs,
+            remaining_args,
+            metadata,
         )
 
         if fn_spec.varargs or fn_spec.varkw:
@@ -744,13 +749,13 @@ def _MakeParseFn(fn, metadata):
     return _ParseFn
 
 
-def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs, remaining_args, metadata):
+def _ParseArgs(fn_args: Dict[str, Type], fn_defaults, num_required_args, kwargs, remaining_args, metadata):
     """Parses the positional and named arguments from the available supplied args.
 
     Modifies kwargs, removing args as they are used.
 
     Args:
-      fn_args: A list of argument names that the target function accepts,
+      fn_args: A dict of argument names and argument types that the target function accepts,
           including positional and named arguments, but not the varargs or kwargs
           names.
       fn_defaults: A list of the default values in the function argspec.
@@ -775,16 +780,16 @@ def _ParseArgs(fn_args, fn_defaults, num_required_args, kwargs, remaining_args, 
 
     # Select unnamed args.
     parsed_args = []
-    for index, arg in enumerate(fn_args):
+    for index, (arg, t) in enumerate(fn_args.items()):
         value = kwargs.pop(arg, None)
         if value is not None:  # A value is specified at the command line.
-            value = _ParseValue(value, index, arg, metadata)
+            value = _ParseValue(value, index, arg, t, metadata)
             parsed_args.append(value)
         else:  # No value has been explicitly specified.
             if remaining_args and accepts_positional_args:
                 # Use a positional arg.
                 value = remaining_args.pop(0)
-                value = _ParseValue(value, index, arg, metadata)
+                value = _ParseValue(value, index, arg, t, metadata)
                 parsed_args.append(value)
             elif index < num_required_args:
                 raise FireError("The function received no value for the required argument:", arg)
@@ -940,7 +945,7 @@ def _IsMultiCharFlag(argument):
     return argument.startswith("--") or re.match("^-[a-zA-Z]", argument)
 
 
-def _ParseValue(value, index, arg, metadata):
+def _ParseValue(value, index, arg: str, t: Type, metadata):
     """Parses value, a string, into the appropriate type.
 
     The function used to parse value is determined by the remaining arguments.
@@ -949,11 +954,15 @@ def _ParseValue(value, index, arg, metadata):
       value: The string value to be parsed, typically a command line argument.
       index: The index of the value in the function's argspec.
       arg: The name of the argument the value is being parsed for.
+      t: The type of the argument.
       metadata: Metadata about the function, typically from Fire decorators.
     Returns:
       value, parsed into the appropriate type for calling a function.
     """
-    parse_fn = parser.DefaultParseValue
+    if t is not ...:
+        parse_fn = parser.SpecTypeParseValueGen(t)
+    else:
+        parse_fn = parser.DefaultParseValue
 
     # We check to see if any parse function from the fn metadata applies here.
     parse_fns = metadata.get(decorators.FIRE_PARSE_FNS)
