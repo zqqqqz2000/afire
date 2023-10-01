@@ -1,28 +1,32 @@
-# Python Fire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire)
+# Python Afire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire)
 
-_Python Fire is a library for automatically generating command line interfaces
+Fork from [python-fire](https://github.com/google/python-fire).
+
+_Python AFire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
 
--   Python Fire is a simple way to create a CLI in Python.
+
+-   Python Afire is a simple way to create a CLI in Python.
     [[1]](docs/benefits.md#simple-cli)
--   Python Fire is a helpful tool for developing and debugging Python code.
+-   Python Afire is a helpful tool for developing and debugging Python code.
     [[2]](docs/benefits.md#debugging)
--   Python Fire helps with exploring existing code or turning other people's
+-   Python Afire helps with exploring existing code or turning other people's
     code into a CLI. [[3]](docs/benefits.md#exploring)
--   Python Fire makes transitioning between Bash and Python easier.
+-   Python Afire makes transitioning between Bash and Python easier.
     [[4]](docs/benefits.md#bash)
--   Python Fire makes using a Python REPL easier by setting up the REPL with the
+-   Python Afire makes using a Python REPL easier by setting up the REPL with the
     modules and variables you'll need already imported and created.
     [[5]](docs/benefits.md#repl)
+-   Python Afire **fully support type hint.**
 
 ## Installation
 
-To install Python Fire with pip, run: `pip install fire`
+To install Python Afire with pip, run: `pip install afire`
 
-To install Python Fire with conda, run: `conda install fire -c conda-forge`
+To install Python Afire with conda, run: `conda install afire -c conda-forge`
 
-To install Python Fire from source, first clone the repository and then run:
-`python setup.py install`
+To install Python Afire from source, first clone the repository and then run:
+`poetry install`
 
 ## Basic Usage
 
@@ -30,84 +34,80 @@ You can call `Fire` on any Python object:<br>
 functions, classes, modules, objects, dictionaries, lists, tuples, etc.
 They all work!
 
-Here's an example of calling Fire on a function.
+Here's an example of calling Fire on a function with type hint, it will automatically recognize and convert types according to your hype hint.
 
 ```python
-import fire
+import afire
+from pathlib import Path
 
-def hello(name="World"):
-  return "Hello %s!" % name
+def hello(path: Path):
+  assert isinstance(path, Path)
 
 if __name__ == '__main__':
-  fire.Fire(hello)
+  afire.Fire(hello)
 ```
 
 Then, from the command line, you can run:
 
 ```bash
-python hello.py  # Hello World!
-python hello.py --name=David  # Hello David!
+python hello.py --path=/root  # No error
 python hello.py --help  # Shows usage information.
 ```
 
-Here's an example of calling Fire on a class.
+Here's an example of calling Fire on a function with nested type hint.
 
 ```python
-import fire
+import afire
+from typing import Dict, Union, Set
 
-class Calculator(object):
-  """A simple calculator class."""
+def test(a: Union[Dict[str, int], Set[bytes]]):
+  # check types
+  assert isinstance(a, (Dict, Set))
 
-  def double(self, number):
-    return 2 * number
+  # check types in dict or set
+  if isinstance(a, Dict):
+    for k, v in a.items():
+      assert isinstance(k, str)
+      assert isinstance(v, int)
+  else:
+    for i in a:
+      assert isinstance(i, bytes)
+  print(a)
 
 if __name__ == '__main__':
-  fire.Fire(Calculator)
+  afire.Fire(test)
 ```
 
 Then, from the command line, you can run:
 
 ```bash
-python calculator.py double 10  # 20
-python calculator.py double --number=15  # 30
+# dict type
+python test.py --a='{1: 2}'  # {'1': 2}
+# or use position arg
+python test.py '{1: 2}'  # {'1': 2}
+
+# set type
+python test.py --a='{a, b, c}'  # {b'a', b'b', b'c'}
 ```
+## Type conversion rules:
+|                             |             str             |          int           |   bytes    | **<- input** |
+| :-------------------------: | :-------------------------: | :--------------------: | :--------: | :----------: |
+|             str             |              *              |           *            |     *      |              |
+|             int             |   can be converted to int   |           *            |     x      |              |
+|            bytes            |           *(utf8)           | *(length 8, big order) |     *      |              |
+|        datetime/date        | format: YYYY-MM-DD-HH:MM:SS |           x            |     x      |              |
+|                             | format: YYYY-MM-DD HH:MM:SS |                        |            |              |
+|                             | format: YYYY/MM/DD HH:MM:SS |                        |            |              |
+|                             |   format: YYYYMMDDHHMMSS    |                        |            |              |
+|                             |     format: YYYY/MM/DD      |                        |            |              |
+|                             |     format: YYYY-MM-DD      |                        |            |              |
+| any type with one parameter |         if support          |       if support       | if support |  if support  |
+|      e.g. Path, float       |                             |                        |            |
+|       **^ type hint**       |                             |                        |            |              |
 
-To learn how Fire behaves on functions, objects, dicts, lists, etc, and to learn
-about Fire's other features, see the [Using a Fire CLI page](docs/using-cli.md).
+*: any kind of input will convert
 
-For additional examples, see [The Python Fire Guide](docs/guide.md).
-
-## Why is it called Fire?
-
-When you call `Fire`, it fires off (executes) your command.
-
-## Where can I learn more?
-
-Please see [The Python Fire Guide](docs/guide.md).
-
-## Reference
-
-| Setup   | Command             | Notes
-| :------ | :------------------ | :---------
-| install | `pip install fire`  |
-
-| Creating a CLI | Command                | Notes
-| :--------------| :--------------------- | :---------
-| import         | `import fire`          |
-| Call           | `fire.Fire()`          | Turns the current module into a Fire CLI.
-| Call           | `fire.Fire(component)` | Turns `component` into a Fire CLI.
-
-| Using a CLI                                     | Command                                 | Notes
-| :---------------------------------------------- | :-------------------------------------- | :----
-| [Help](docs/using-cli.md#help-flag)             | `command --help` or `command -- --help` |
-| [REPL](docs/using-cli.md#interactive-flag)      | `command -- --interactive`              | Enters interactive mode.
-| [Separator](docs/using-cli.md#separator-flag)   | `command -- --separator=X`              | Sets the separator to `X`. The default separator is `-`.
-| [Completion](docs/using-cli.md#completion-flag) | `command -- --completion [shell]`       | Generates a completion script for the CLI.
-| [Trace](docs/using-cli.md#trace-flag)           | `command -- --trace`                    | Gets a Fire trace for the command.
-| [Verbose](docs/using-cli.md#verbose-flag)       | `command -- --verbose`                  |
-
-_Note that these flags are separated from the Fire command by an isolated `--`._
-
+x: not support to convert
 ## License
 
 Licensed under the

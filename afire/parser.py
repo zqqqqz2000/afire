@@ -97,7 +97,7 @@ def ParseComplexValue(value: str, t):
                 if each_type is type(None):
                     continue
                 return SpecTypeParseValueGen(each_type)(value)
-            except ValueError:
+            except ValueError as e:
                 ...
     elif issubclass(origin, (Dict, List, Set, Tuple, bytes)):
         return _ParseConvert(DefaultParseValue(value), t)
@@ -134,7 +134,6 @@ def _ParseConvert(parsed: Any, t):
             else:
                 res_t = list
             args *= len(parsed)
-        print(origin)
         if len(parsed) != len(args):
             raise ValueError(f"number of args mismatch in type: {t} and value: {parsed}")
         for each_type, each_value in zip(args, parsed):
@@ -177,12 +176,15 @@ def _ParseConvert(parsed: Any, t):
     raise ValueError(f"not support type {t} yet")
 
 
-def _BytesParser(value: str) -> bytes:
-    value = DefaultParseValue(value)
+def _BytesParser(value) -> bytes:
+    if value.startswith('b"') or value.startswith("b'"):
+        value = DefaultParseValue(value)
     if isinstance(value, str):
         return value.encode("utf8")
     elif isinstance(value, bytes):
         return value
+    elif isinstance(value, int):
+        return value.to_bytes(8, "big")
     else:
         raise ValueError(f"cannot convert type: {type(value)}, value: {value} as type bytes")
 
