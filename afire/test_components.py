@@ -363,6 +363,9 @@ class CallableWithTypedKeywordArgument(object):
     def SetType(self, foo: Set[str]):
         self.print_with_type(foo, "foo")
 
+    def PartialSetType(self, foo: Set):
+        self.print_with_type(foo, "foo")
+
     def BytesType(self, foo: bytes):
         self.print_with_type(foo, "foo")
 

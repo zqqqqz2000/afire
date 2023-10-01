@@ -142,6 +142,8 @@ def _ParseConvert(parsed: Any, t):
             elif type(None) == each_type:
                 if each_value is not None:
                     raise ValueError(f'cannot parse value: "{each_value}" to type None in Tuple: {parsed}')
+            elif each_type == TypeVar or type(each_type) == TypeVar:
+                res.append(each_value)
             else:
                 res.append(TypeToParser.get(each_type, each_type)(each_value))
         return res_t(res)
@@ -151,7 +153,7 @@ def _ParseConvert(parsed: Any, t):
         if not isinstance(parsed, Dict):
             raise ValueError(f"the type hint is {t}, but got type: {type(parsed).__name__}, value: {parsed}")
         for k, v in parsed.items():
-            if key_t == TypeVar:
+            if key_t == TypeVar or type(key_t) == TypeVar:
                 res_key = k
             elif IsGenericAlias(key_t):
                 res_key = _ParseConvert(k, key_t)

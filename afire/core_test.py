@@ -234,6 +234,9 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout=r"\{'[1,2]', '[1,2]'\} set foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().SetType, command=["--foo={1, 2}"])
 
+        with self.assertOutputMatches(stdout=r"\{[1,2], [1,2]\} set foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().PartialSetType, command=["--foo={1, 2}"])
+
         with self.assertOutputMatches(stdout=r"b'xyz' bytes foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().BytesType, command=["--foo=b'xyz'"])
 
