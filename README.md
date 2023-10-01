@@ -102,6 +102,7 @@ Currently support input types:
 | Set   | `{x, y, z}` |
 | Tuple | `(x, y, z)` |
 
+***note: you can use str or bytes expr in complex type, e.g. [b"x", b"y"]***
 ### Rule
 
 |                             |             str             |          int           |   bytes    | **<- input** |
