@@ -165,6 +165,45 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout="11", stderr=None):
             core.Fire(tc.NamedTuple, command=["point", "-2"])
 
+    def testTypedCallable(self):
+        with self.assertOutputMatches(stdout=r"1 int foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().IntType, command=["--foo=1"])
+
+        with self.assertOutputMatches(stdout=r"1 str foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().StrType, command=["--foo=1"])
+
+        with self.assertOutputMatches(stdout=r"None str foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().StrType, command=["--foo=None"])
+
+        with self.assertOutputMatches(stdout=r"2023-09-24 12:52:33 datetime foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DatetimeType, command=["--foo=2023-09-24 12:52:33"])
+
+        # complex type
+        with self.assertOutputMatches(stdout=r"{'1': 2} dict foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictType, command=["--foo={1:2}"])
+
+        with self.assertOutputMatches(
+            stdout=r"{'1': {3: datetime.datetime\(2023, 9, 24, 12, 52, 33\)}} dict foo", stderr=None
+        ):
+            core.Fire(
+                tc.CallableWithTypedKeywordArgument().DictInDictType, command=["--foo={1:{3:'2023-09-24 12:52:33'}}"]
+            )
+
+        with self.assertOutputMatches(stdout=r"1 int foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().UnionType, command=["--foo=1"])
+
+        with self.assertOutputMatches(stdout=r"2023-09-24 12:52:33 datetime foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().UnionType, command=["--foo=2023-09-24 12:52:33"])
+
+        with self.assertOutputMatches(stdout=r"abcdef str foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().UnionType, command=["--foo=abcdef"])
+
+        with self.assertOutputMatches(stdout=r"None NoneType foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().OptionalType, command=["--foo=None"])
+
+        with self.assertOutputMatches(stdout=r"2023-09-24 12:52:33 datetime foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().OptionalType, command=["--foo=2023-09-24 12:52:33"])
+
     def testCallable(self):
         with self.assertOutputMatches(stdout=r"foo:\s+foo\s+", stderr=None):
             core.Fire(tc.CallableWithKeywordArgument(), command=["--foo=foo"])

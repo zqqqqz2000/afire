@@ -83,22 +83,24 @@ def IsGenericAlias(t) -> bool:
     return "__origin__" in dir(t)
 
 
-def ParserComplexValue(value: str, t):
+def ParseComplexValue(value: str, t):
     origin, args = _DeGenericAlias(t)
     if origin in (Union, Optional):
-        if value.lower() == "None" and origin == Optional:
+        if value == "None" and (origin == Optional or (origin == Union and type(None) in args)):
             return None
 
         for each_type in args:
             try:
                 if IsGenericAlias(each_type):
-                    return ParserComplexValue(value, each_type)
+                    return ParseComplexValue(value, each_type)
 
+                if each_type is type(None):
+                    continue
                 return SpecTypeParseValueGen(each_type)(value)
             except ValueError:
                 ...
 
-    if issubclass(origin, (Dict, Set, Tuple, bytes)):
+    elif issubclass(origin, (Dict, Set, Tuple, bytes)):
         return _ParseConvert(DefaultParseValue(value), t)
 
     raise ValueError(f'cannot parse value "{value}" to type {t}')
@@ -109,6 +111,8 @@ def _ParseConvert(parsed: Any, t):
     if issubclass(origin, Dict):
         res = {}
         key_t, value_t = args
+        if not isinstance(parsed, Dict):
+            raise ValueError(f"the type hint is {t}, but got type: {type(parsed).__name__}, value: {parsed}")
         for k, v in parsed.items():
             if key_t == TypeVar:
                 res_key = k
@@ -131,14 +135,14 @@ def _ParseConvert(parsed: Any, t):
 TypeToParser = {
     datetime: ParseTime,
     date: lambda value: ParseTime(value).date,
-    bool: lambda value: value.lower() == "true" or value == True,
+    bool: lambda value: value == "True" or value == True,
 }
 
 
 def SpecTypeParseValueGen(t) -> Callable[[str], Any]:
     # complex type, e.g. Union
     if IsGenericAlias(t):
-        parse_fn = partial(ParserComplexValue, t=t)
+        parse_fn = partial(ParseComplexValue, t=t)
     # try to use type to parser mapping or callable
     else:
         parse_fn = TypeToParser.get(t, t)

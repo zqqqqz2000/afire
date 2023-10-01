@@ -21,6 +21,8 @@ from __future__ import print_function
 import collections
 import enum
 import functools
+from datetime import datetime
+from typing import Dict, Union, Optional
 
 import six
 
@@ -320,6 +322,34 @@ class CallableWithKeywordArgument(object):
 
     def print_msg(self, msg):
         print(msg)
+
+
+class CallableWithTypedKeywordArgument(object):
+    """Test class for supporting typed callable."""
+
+    def IntType(self, foo: int):
+        self.print_with_type(foo, "foo")
+
+    def StrType(self, foo: str):
+        self.print_with_type(foo, "foo")
+
+    def DatetimeType(self, foo: datetime):
+        self.print_with_type(foo, "foo")
+
+    def DictType(self, foo: Dict[str, int]):
+        self.print_with_type(foo, "foo")
+
+    def DictInDictType(self, foo: Dict[str, Dict[int, datetime]]):
+        self.print_with_type(foo, "foo")
+
+    def UnionType(self, foo: Union[int, datetime, str]):
+        self.print_with_type(foo, "foo")
+
+    def OptionalType(self, foo: Optional[datetime]):
+        self.print_with_type(foo, "foo")
+
+    def print_with_type(self, i, *args):
+        print(i, type(i).__name__, *args)
 
 
 CALLABLE_WITH_KEYWORD_ARGUMENT = CallableWithKeywordArgument()
