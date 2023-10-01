@@ -231,8 +231,14 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout=r"\['1', '2'\] list foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().ListType, command=["--foo=[1, 2]"])
 
-        with self.assertOutputMatches(stdout=r"\{'1', '2'\} set foo", stderr=None):
+        with self.assertOutputMatches(stdout=r"\{'[1,2]', '[1,2]'\} set foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().SetType, command=["--foo={1, 2}"])
+
+        with self.assertOutputMatches(stdout=r"b'xyz' bytes foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().BytesType, command=["--foo=b'xyz'"])
+
+        with self.assertOutputMatches(stdout=r"b'xyz' bytes foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().BytesType, command=["--foo=xyz"])
 
         with self.assertOutputMatches(
             stdout=r"\['1', datetime.datetime\(2023, 9, 24, 12, 52, 33\)\] list foo", stderr=None

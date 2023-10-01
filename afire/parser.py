@@ -168,13 +168,30 @@ def _ParseConvert(parsed: Any, t):
 
             res[res_key] = res_value
         return res
-    yield ValueError(f"not support type {t} yet")
+    elif issubclass(origin, bytes):
+        if isinstance(parsed, str):
+            return parsed.encode("utf8")
+        if not isinstance(parsed, bytes):
+            raise ValueError(f"the type hint is {t}, but got type: {type(parsed).__name__}, value: {parsed}")
+        return parsed
+    raise ValueError(f"not support type {t} yet")
+
+
+def _BytesParser(value: str) -> bytes:
+    value = DefaultParseValue(value)
+    if isinstance(value, str):
+        return value.encode("utf8")
+    elif isinstance(value, bytes):
+        return value
+    else:
+        raise ValueError(f"cannot convert type: {type(value)}, value: {value} as type bytes")
 
 
 TypeToParser = {
     datetime: ParseTime,
     date: lambda value: ParseTime(value).date,
     bool: lambda value: value == "True" or value == True,
+    bytes: _BytesParser,
 }
 
 
