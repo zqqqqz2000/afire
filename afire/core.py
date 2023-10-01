@@ -738,7 +738,7 @@ def _MakeParseFn(fn, metadata):
             varargs = []
 
         for index, value in enumerate(varargs):
-            varargs[index] = _ParseValue(value, None, None, metadata)
+            varargs[index] = _ParseValue(value, None, None, ..., metadata)
 
         varargs = parsed_args + varargs
         remaining_args += remaining_kwargs
@@ -801,7 +801,7 @@ def _ParseArgs(fn_args: Dict[str, Type], fn_defaults, num_required_args, kwargs,
                 parsed_args.append(fn_defaults[default_index])
 
     for key, value in kwargs.items():
-        kwargs[key] = _ParseValue(value, None, key, metadata)
+        kwargs[key] = _ParseValue(value, None, key, ..., metadata)
 
     return parsed_args, kwargs, remaining_args, capacity
 

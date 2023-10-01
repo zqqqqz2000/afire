@@ -40,19 +40,19 @@ class CoreTest(testutils.BaseTestCase):
             core._OneLineResult(circular_reference.create()), "{'y': {...}}"  # pylint: disable=protected-access
         )
 
-    @mock.patch("fire.interact.Embed")
+    @mock.patch("afire.interact.Embed")
     def testInteractiveMode(self, mock_embed):
         core.Fire(tc.TypedProperties, command=["alpha"])
         self.assertFalse(mock_embed.called)
         core.Fire(tc.TypedProperties, command=["alpha", "--", "-i"])
         self.assertTrue(mock_embed.called)
 
-    @mock.patch("fire.interact.Embed")
+    @mock.patch("afire.interact.Embed")
     def testInteractiveModeFullArgument(self, mock_embed):
         core.Fire(tc.TypedProperties, command=["alpha", "--", "--interactive"])
         self.assertTrue(mock_embed.called)
 
-    @mock.patch("fire.interact.Embed")
+    @mock.patch("afire.interact.Embed")
     def testInteractiveModeVariables(self, mock_embed):
         core.Fire(tc.WithDefaults, command=["double", "2", "--", "-i"])
         self.assertTrue(mock_embed.called)
@@ -62,7 +62,7 @@ class CoreTest(testutils.BaseTestCase):
         self.assertIsInstance(variables["self"], tc.WithDefaults)
         self.assertIsInstance(variables["trace"], trace.FireTrace)
 
-    @mock.patch("fire.interact.Embed")
+    @mock.patch("afire.interact.Embed")
     def testInteractiveModeVariablesWithName(self, mock_embed):
         core.Fire(tc.WithDefaults, command=["double", "2", "--", "-i", "-v"], name="D")
         self.assertTrue(mock_embed.called)

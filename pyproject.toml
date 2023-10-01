@@ -7,10 +7,16 @@ license = "Apache License Version 2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 termcolor = "^2.3.0"
 six = "^1.16.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+mock = "^5.1.0"
+hypothesis = "^6.87.0"
+levenshtein = "^0.22.0"
 
 [build-system]
 requires = ["poetry-core"]

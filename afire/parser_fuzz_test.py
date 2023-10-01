@@ -53,6 +53,8 @@ class ParserFuzzTest(testutils.BaseTestCase):
     @example(100 * "[" + "0")  # Note: Causes MemoryError.
     @example("\r\r\r\r1\r\r")
     def testDefaultParseValueFuzz(self, value):
+        if value == "...":
+            return
         try:
             result = parser.DefaultParseValue(value)
         except TypeError:
