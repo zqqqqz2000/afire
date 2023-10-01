@@ -116,13 +116,15 @@ Currently support input types:
 |                             |   format: YYYYMMDDHHMMSS    |                        |            |              |
 |                             |     format: YYYY/MM/DD      |                        |            |              |
 |                             |     format: YYYY-MM-DD      |                        |            |              |
-| any type with one parameter |         if support          |       if support       | if support |  if support  |
+| any type with one parameter |         if support          |       if support       | if support |              |
 |      e.g. Path, float       |                             |                        |            |
 |       **^ type hint**       |                             |                        |            |              |
 
 *: any kind of input will convert
 
 x: not support to convert
+
+***Currently relation type hint only support `Union` and `Optional`.***
 ## License
 
 Licensed under the
