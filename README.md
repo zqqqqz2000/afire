@@ -1,6 +1,6 @@
 # Python Afire [![PyPI](https://img.shields.io/pypi/pyversions/fire.svg?style=plastic)](https://github.com/google/python-fire)
 
-Fork from [python-fire](https://github.com/google/python-fire).
+Fork from [python-fire](https://github.com/google/python-fire). ***support type conversion based on the type hints.***
 
 _Python AFire is a library for automatically generating command line interfaces
 (CLIs) from absolutely any Python object._
