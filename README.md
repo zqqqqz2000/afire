@@ -89,7 +89,21 @@ python test.py '{1: 2}'  # {'1': 2}
 # set type
 python test.py --a='{a, b, c}'  # {b'a', b'b', b'c'}
 ```
-## Type conversion rules:
+## Type conversion rules
+
+Currently support input types:
+| type  | example     |
+| :---- | :---------- |
+| str   | `"a"`       |
+| int   | `1`         |
+| bytes | `b"a"`      |
+| List  | `[x, y, z]` |
+| Dict  | `[x: y]`    |
+| Set   | `{x, y, z}` |
+| Tuple | `(x, y, z)` |
+
+### Rule
+
 |                             |             str             |          int           |   bytes    | **<- input** |
 | :-------------------------: | :-------------------------: | :--------------------: | :--------: | :----------: |
 |             str             |              *              |           *            |     *      |              |

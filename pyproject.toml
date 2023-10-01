@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "afire"
-version = "0.1.0"
-description = ""
+version = "1.0.0"
+description = "python fire cli with type hint support"
 authors = ["zqqqqz2000 <zqqqqz2000@sina.cn>"]
 license = "Apache License Version 2.0"
 readme = "README.md"
