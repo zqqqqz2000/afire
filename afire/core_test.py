@@ -213,8 +213,28 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout=r"{'xxx': 1} dict foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:1}"])
 
+        with self.assertOutputMatches(stdout=r"{xxx:yyy} str foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:yyy}"])
+
         with self.assertOutputMatches(stdout=r"{'xxx': None} dict foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:None}"])
+
+        with self.assertOutputMatches(stdout=r"\(1, '2'\) tuple foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().TupleType, command=["--foo=(1, 2)"])
+
+        with self.assertOutputMatches(stdout=r"\(1, '2'\) tuple foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().TupleOptionalType, command=["--foo=(1, 2)"])
+
+        with self.assertOutputMatches(stdout=r"\(1, None\) tuple foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().TupleOptionalType, command=["--foo=(1, None)"])
+
+        with self.assertOutputMatches(stdout=r"\['1', '2'\] list foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().ListType, command=["--foo=[1, 2]"])
+
+        with self.assertOutputMatches(
+            stdout=r"\['1', datetime.datetime\(2023, 9, 24, 12, 52, 33\)\] list foo", stderr=None
+        ):
+            core.Fire(tc.CallableWithTypedKeywordArgument().ListUnionType, command=["--foo=[1, '2023-09-24 12:52:33']"])
 
     def testCallable(self):
         with self.assertOutputMatches(stdout=r"foo:\s+foo\s+", stderr=None):

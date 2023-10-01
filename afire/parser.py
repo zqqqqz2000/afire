@@ -68,7 +68,7 @@ def ParseTime(value: str) -> datetime:
     ]:
         try:
             return datetime.strptime(value, format)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
     raise ValueError(f"cannot parse {value} as date/datetime")
 
@@ -99,8 +99,7 @@ def ParseComplexValue(value: str, t):
                 return SpecTypeParseValueGen(each_type)(value)
             except ValueError:
                 ...
-
-    elif issubclass(origin, (Dict, Set, Tuple, bytes)):
+    elif issubclass(origin, (Dict, List, Set, Tuple, bytes)):
         return _ParseConvert(DefaultParseValue(value), t)
 
     raise ValueError(f'cannot parse value "{value}" to type {t}')
@@ -125,6 +124,25 @@ def _ParseConvert(parsed: Any, t):
                 except ValueError:
                     continue
         raise ValueError(f'cannot parse value "{parsed}" to type {t}')
+    elif issubclass(origin, (Tuple, List)):
+        res = []
+        if issubclass(origin, Tuple):
+            res_t = tuple
+        else:
+            res_t = list
+            args *= len(parsed)
+        print(origin)
+        if len(parsed) != len(args):
+            raise ValueError(f"number of args mismatch in type: {t} and value: {parsed}")
+        for each_type, each_value in zip(args, parsed):
+            if IsGenericAlias(each_type):
+                res.append(_ParseConvert(each_value, each_type))
+            elif type(None) == each_type:
+                if each_value is not None:
+                    raise ValueError(f'cannot parse value: "{each_value}" to type None in Tuple: {parsed}')
+            else:
+                res.append(TypeToParser.get(each_type, each_type)(each_value))
+        return res_t(res)
     elif issubclass(origin, Dict):
         res = {}
         key_t, value_t = args

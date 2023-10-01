@@ -22,7 +22,7 @@ import collections
 import enum
 import functools
 from datetime import datetime
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, Tuple, List
 
 import six
 
@@ -349,6 +349,18 @@ class CallableWithTypedKeywordArgument(object):
         self.print_with_type(foo, "foo")
 
     def DictOptionalUnion(self, foo: Union[Dict[str, Optional[int]], Optional[str]]):
+        self.print_with_type(foo, "foo")
+
+    def TupleType(self, foo: Tuple[int, str]):
+        self.print_with_type(foo, "foo")
+
+    def TupleOptionalType(self, foo: Tuple[int, Optional[str]]):
+        self.print_with_type(foo, "foo")
+
+    def ListType(self, foo: List[str]):
+        self.print_with_type(foo, "foo")
+
+    def ListUnionType(self, foo: List[Union[datetime, str]]):
         self.print_with_type(foo, "foo")
 
     def print_with_type(self, i, *args):
