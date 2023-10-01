@@ -108,7 +108,24 @@ def ParseComplexValue(value: str, t):
 
 def _ParseConvert(parsed: Any, t):
     origin, args = _DeGenericAlias(t)
-    if issubclass(origin, Dict):
+    if origin == Union:
+        # if is None, return directly
+        if type(None) in args and parsed is None:
+            return None
+        for may_type in args:
+            # filter None type
+            if may_type == type(None):
+                continue
+            else:
+                try:
+                    if IsGenericAlias(may_type):
+                        return _ParseConvert(parsed, may_type)
+                    else:
+                        return TypeToParser.get(may_type, may_type)(parsed)
+                except ValueError:
+                    continue
+        raise ValueError(f'cannot parse value "{parsed}" to type {t}')
+    elif issubclass(origin, Dict):
         res = {}
         key_t, value_t = args
         if not isinstance(parsed, Dict):

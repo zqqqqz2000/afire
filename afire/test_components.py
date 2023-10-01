@@ -348,6 +348,9 @@ class CallableWithTypedKeywordArgument(object):
     def OptionalType(self, foo: Optional[datetime]):
         self.print_with_type(foo, "foo")
 
+    def DictOptionalUnion(self, foo: Union[Dict[str, Optional[int]], Optional[str]]):
+        self.print_with_type(foo, "foo")
+
     def print_with_type(self, i, *args):
         print(i, type(i).__name__, *args)
 

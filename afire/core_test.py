@@ -204,6 +204,18 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout=r"2023-09-24 12:52:33 datetime foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().OptionalType, command=["--foo=2023-09-24 12:52:33"])
 
+        with self.assertOutputMatches(stdout=r"None NoneType foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo=None"])
+
+        with self.assertOutputMatches(stdout=r"{xxx:yyy} str foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:yyy}"])
+
+        with self.assertOutputMatches(stdout=r"{'xxx': 1} dict foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:1}"])
+
+        with self.assertOutputMatches(stdout=r"{'xxx': None} dict foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().DictOptionalUnion, command=["--foo={xxx:None}"])
+
     def testCallable(self):
         with self.assertOutputMatches(stdout=r"foo:\s+foo\s+", stderr=None):
             core.Fire(tc.CallableWithKeywordArgument(), command=["--foo=foo"])
