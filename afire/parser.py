@@ -124,12 +124,15 @@ def _ParseConvert(parsed: Any, t):
                 except ValueError:
                     continue
         raise ValueError(f'cannot parse value "{parsed}" to type {t}')
-    elif issubclass(origin, (Tuple, List)):
+    elif issubclass(origin, (Tuple, List, Set)):
         res = []
         if issubclass(origin, Tuple):
             res_t = tuple
         else:
-            res_t = list
+            if issubclass(origin, Set):
+                res_t = set
+            else:
+                res_t = list
             args *= len(parsed)
         print(origin)
         if len(parsed) != len(args):
@@ -165,6 +168,7 @@ def _ParseConvert(parsed: Any, t):
 
             res[res_key] = res_value
         return res
+    yield ValueError(f"not support type {t} yet")
 
 
 TypeToParser = {

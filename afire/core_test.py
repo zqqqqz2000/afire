@@ -231,6 +231,9 @@ class CoreTest(testutils.BaseTestCase):
         with self.assertOutputMatches(stdout=r"\['1', '2'\] list foo", stderr=None):
             core.Fire(tc.CallableWithTypedKeywordArgument().ListType, command=["--foo=[1, 2]"])
 
+        with self.assertOutputMatches(stdout=r"\{'1', '2'\} set foo", stderr=None):
+            core.Fire(tc.CallableWithTypedKeywordArgument().SetType, command=["--foo={1, 2}"])
+
         with self.assertOutputMatches(
             stdout=r"\['1', datetime.datetime\(2023, 9, 24, 12, 52, 33\)\] list foo", stderr=None
         ):
