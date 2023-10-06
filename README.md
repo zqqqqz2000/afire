@@ -98,7 +98,7 @@ Currently support input types:
 | int   | `1`         |
 | bytes | `b"a"`      |
 | List  | `[x, y, z]` |
-| Dict  | `[x: y]`    |
+| Dict  | `{x: y}`    |
 | Set   | `{x, y, z}` |
 | Tuple | `(x, y, z)` |
 
