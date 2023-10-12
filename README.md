@@ -34,7 +34,7 @@ You can call `Fire` on any Python object:<br>
 functions, classes, modules, objects, dictionaries, lists, tuples, etc.
 They all work!
 
-Here's an example of calling Fire on a function with type hint, it will automatically recognize and convert types according to your hype hint.
+Here's an example of calling Fire on a function with type hint, it will automatically recognize and convert types according to your type hint.
 
 ```python
 import afire
