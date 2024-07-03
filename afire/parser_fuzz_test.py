@@ -94,7 +94,7 @@ class ParserFuzzTest(testutils.BaseTestCase):
 
         # Note: We don't check distance for dicts since item order can be changed.
         if "{" not in value:
-            self.assertLessEqual(distance, max_distance, (distance, max_distance, uvalue, uresult))
+            self.assertLessEqual(distance, max_distance, (distance, max_distance, uvalue, uresult, type(uresult)))
 
 
 if __name__ == "__main__":

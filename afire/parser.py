@@ -75,6 +75,8 @@ def ParseTime(value: str) -> datetime:
 
 def _DeGenericAlias(t) -> Tuple[Type, List[Type]]:
     if IsGenericAlias(t):
+        if "__args__" not in dir(t):
+            return t.__origin__, [Any]
         return t.__origin__, t.__args__
     return t, []
 
@@ -142,7 +144,7 @@ def _ParseConvert(parsed: Any, t):
             elif type(None) == each_type:
                 if each_value is not None:
                     raise ValueError(f'cannot parse value: "{each_value}" to type None in Tuple: {parsed}')
-            elif each_type == TypeVar or type(each_type) == TypeVar:
+            elif each_type == TypeVar or type(each_type) == TypeVar or each_type is Any:
                 res.append(each_value)
             else:
                 res.append(TypeToParser.get(each_type, each_type)(each_value))
