@@ -52,8 +52,7 @@ def lru_cache_decorated(arg1):
 
 
 class WithAsyncio(object):
-    @asyncio.coroutine
-    def double(self, count=0):
+    async def double(self, count=0):
         return 2 * count
 
 
@@ -72,7 +71,7 @@ class WithTypes(object):
         return 2 * count
 
     def long_type(
-        self, long_obj: (Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[int]]]]]]]]]]]])
+        self, long_obj: Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[Tuple[int]]]]]]]]]]]]
     ):
         return long_obj
 
