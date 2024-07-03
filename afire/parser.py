@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import platform
 import ast
 from datetime import datetime, date
 from typing import Union, Optional, Type, List, Tuple, Callable, Any, Dict, Set, TypeVar
@@ -74,14 +75,30 @@ def ParseTime(value: str) -> datetime:
 
 
 def _DeGenericAlias(t) -> Tuple[Type, List[Type]]:
+    origin_type = None
+    if platform.python_version().startswith("3.11."):
+        if "__class__" in dir(t):
+            from types import UnionType
+
+            if t.__class__ == UnionType:
+                origin_type = Union
+    if origin_type is None:
+        origin_type = t.__origin__
+
     if IsGenericAlias(t):
         if "__args__" not in dir(t):
-            return t.__origin__, [Any]
-        return t.__origin__, t.__args__
+            return origin_type, [Any]
+        return origin_type, t.__args__
     return t, []
 
 
 def IsGenericAlias(t) -> bool:
+    if platform.python_version().startswith("3.11."):
+        if "__class__" in dir(t):
+            from types import UnionType
+
+            if t.__class__ == UnionType:
+                return True
     return "__origin__" in dir(t)
 
 
